@@ -17,12 +17,15 @@ public static class Program
         var backupPath = Path.Combine(Path.GetDirectoryName(filePath) ?? ".", backupName);
         try
         {
-            File.Copy(filePath, backupPath, true);
+            File.Copy(filePath, backupPath, false);
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Failed to write backup to '{backupPath}': {ex}");
-            return 1;
+            if (ex is not IOException || !File.Exists(backupPath))
+            {
+                Console.Error.WriteLine($"Failed to write backup to '{backupPath}': {ex}");
+                return 1;
+            }
         }
 
         try
